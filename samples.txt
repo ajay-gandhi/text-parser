@@ -1,0 +1,17 @@
+order
+alfred order xyz from abc
+
+set info
+alfred info [name, num]
+
+forget
+alfred forget [info, favorite]
+
+favorite set
+alfred [set [my]] favorite [to] xyz from abc
+
+favorite order
+alfred order [[my] favorite]
+
+stats
+alfred [show me][global] stats [from abc]
