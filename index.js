@@ -95,6 +95,7 @@ module.exports = (function () {
 
           // Ignore whitespace
           while (isWs(phrase[j])) j++;
+          console.log(i, j);
 
           // Collect value
           let val = "";
