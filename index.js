@@ -15,7 +15,7 @@ const model = [
   },
   {
     key: "get info",
-    phrase: "alfred [get [my]][what's my][show me [my]] info [name, num]",
+    phrase: "alfred [get][what's][show me] [my] info [name, num]",
   },
   {
     key: "forget",
@@ -29,21 +29,13 @@ const model = [
     key: "order favorite",
     phrase: "alfred order [[my] favorite]",
   },
-  // {
-    // key: "stats",
-    // phrase: "alfred [show me][global] stats [from {rest}]",
-  // },
+  {
+    key: "stats",
+    phrase: "alfred [show me] [my][global][all][full] stats",
+  //         alfred my stats
+    // phrase: "alfred [show me][my][global][all][full] stats [from {rest}]",
+  },
 ];
-
-// "alfred order ed from me" => {
-  // args: {
-    // order: "ed",
-    // rest: "me",
-  // },
-  // flags: {
-    // me: false,
-  // }
-// }
 
 // We should already have the model
 const NOT_ALPHANUM = /[^A-Za-z0-9]/;
@@ -51,17 +43,20 @@ const parseText = (text) => {
   return model.reduce((memo, { key, phrase }) => {
     if (memo) return memo;
 
-    let numArgs = 0;
-    const argsRequired = phrase.split("{").length - 1;
+    const output = { key, args: {}, flags: {} };
+    let j = 0, i = 0;
+    while (j < phrase.length || i < text.length) {
+      // Non-match conditions
+      if (j >= phrase.length) return false;
+      if (i >= text.length) {
+        return isOptional(phrase.substring(j)) && output;
+      }
 
-    const output = { args: {}, flags: {} };
-    let j = 0;
-    for (let i = 0; i < text.length; i++) {
       // Collect flags
       while (phrase[j] === "[") {
         j++;
 
-        let flags = [{
+        const flags = [{
           name: "",
           match: true,
         }];
@@ -80,16 +75,19 @@ const parseText = (text) => {
 
             case "]": {
               const flag = flags.shift();
-              output.flags[flag.name] = flag.match;
+              output.flags[flag.name] = flags.reduce((m, f) => m && f.match, flag.match);
 
               j++;
-              while (j < phrase.length && isWs(phrase[j]) && !isWs(text[i])) j++;
 
-              if (!flag.match) i -= flag.name.length;
+              if (!output.flags[flag.name]) {
+                i -= flag.name.length;
+              }
+              while (j < phrase.length && isWs(phrase[j]) && !isWs(text[i])) j++;
               break;
             }
 
             default: {
+// TODO: remove isWs
               if (phrase[j] !== text[i] && !isWs(phrase[j])) {
                 flags[0].match = false;
               }
@@ -101,7 +99,6 @@ const parseText = (text) => {
         }
         while (j < phrase.length && isWs(phrase[j]) && !isWs(text[i])) j++;
       }
-      if (key === "order") console.log(j, phrase[j]);
 
       // Collect args
       if (phrase[j] === "{") {
@@ -111,7 +108,6 @@ const parseText = (text) => {
           if (j >= phrase.length) return false;
           param += phrase[j];
         }
-        if (key === "order") console.log(param);
         j++;
 
         // Ignore whitespace
@@ -125,22 +121,39 @@ const parseText = (text) => {
           i++;
         }
         output.args[param] = val.trim();
-        numArgs++;
       }
+
+      // Compare text
       while (j < phrase.length && isWs(phrase[j]) && !isWs(text[i])) j++;
-      if (phrase[j] !== text[i]) return false;
+      if (phrase[j] !== text[i]) {
+        return false;
+      }
       j++;
+      i++;
     }
-    output.key = key;
-    return numArgs === argsRequired ? output : false;
+    return output;
   }, false);
 };
 
-const isWs = x => /^\s$/.test(x);
+const isWs = s => /^\s$/.test(s);
+const isOptional = (s) => {
+  let opens = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === "[") {
+      opens++;
+    } else if (s[i] === "]") {
+      opens--;
+    } else if (!isWs(s[i])) {
+      if (opens <= 0) return false;
+    }
+  }
+  return true;
+};
 
 // console.log(parseText("alfred order me mango lassi from enwa"));
 // console.log(parseText("alfred forget my order"));
 // console.log(parseText("alfred set my info to ajay gandhi, hello"));
-// console.log(parseText("alfred get info"));
+// console.log(parseText("alfred get my info"));
 // console.log(parseText("alfred set my favorite to xyz and abc from red chilli"));
-console.log(parseText("alfred order"));
+// console.log(parseText("alfred order"));
+// console.log(parseText("alfred my stats"));
