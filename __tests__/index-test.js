@@ -1,36 +1,15 @@
 
 const Parser = require("../index");
 
-const model = [
-  {
-    key: "order",
-    phrase: "alfred order [me] [a][some] {order} from {rest}",
-  },
-  {
-    key: "set info",
-    phrase: "alfred [set [my]] info [to] {name},{number}",
-  },
-  {
-    key: "get info",
-    phrase: "alfred [get][what's][show me] [my] info [name, num]",
-  },
-  {
-    key: "forget",
-    phrase: "alfred forget [my] [info][favorite][order]",
-  },
-  {
-    key: "set favorite",
-    phrase: "alfred [set [my]] favorite [to] {order} from {rest}",
-  },
-  {
-    key: "order favorite",
-    phrase: "alfred order [[my] favorite]",
-  },
-  {
-    key: "stats",
-    phrase: "alfred [show me] [my][global][all][full] stats",
-  },
-];
+const model = {
+  "order": "alfred order [me] [a][some] {order} from {rest}",
+  "set info": "alfred [set [my]] info [to] {name},{number}",
+  "get info": "alfred [get][what's][show me] [my] info [name, num]",
+  "forget": "alfred forget [my] [info][favorite][order]",
+  "set favorite": "alfred [set [my]] favorite [to] {order} from {rest}",
+  "order favorite": "alfred order [[my] favorite]",
+  "stats": "alfred [show me] [my][global][all][full] stats",
+};
 
 const inputs = [
   "alfred order me mango lassi from newa",

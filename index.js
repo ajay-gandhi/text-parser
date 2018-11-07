@@ -16,7 +16,10 @@ const isOptional = (s) => {
 module.exports = (function () {
 
   function Parser(model) {
-    this.model = model;
+    this.model = Object.keys(model).map((key) => ({
+      key,
+      phrase: model[key],
+    }));
   }
 
   Parser.prototype.parse = function (text) {
