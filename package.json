@@ -1,0 +1,23 @@
+{
+  "name": "text-parser",
+  "version": "0.0.1",
+  "description": "Parse arguments from a grammar",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^23.6.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git repo"
+  },
+  "keywords": [
+    "parse",
+    "grammar"
+  ],
+  "author": "Ajay Gandhi",
+  "license": "ISC"
+}
